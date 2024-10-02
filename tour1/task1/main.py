@@ -1,7 +1,16 @@
 #Imports section
+import turtle
 from turtle import *
 import random
-from time import sleep
+
+#---------------------------------------------
+#INIT
+wn = turtle.Screen() #Starting screen
+
+# This turns off screen updates 
+wn.tracer(0) 
+
+
 
 #---------------------------------------------
 #Functions helpers
@@ -57,7 +66,7 @@ for i in range(4):
 
 
 #declaring UNIT constant that we'll use to draw level
-UNIT = 10 #number of steps
+UNIT = 28 #number of steps
 
 #placing objects in random positions
 def placeObjects():
@@ -80,14 +89,68 @@ def placeObjects():
 
 #drawing level
 def drawLevel():
+    #placing objects
     placeObjects()
+    #preparations to draw level
     penup()
-    for line in level:
-        for symbol in line:
-            pass
+    left(90)
+    forward(len(level)/2*UNIT)
+    left(90)
+    forward(len(level[0])/2*UNIT)
+    right(180)
+
+    for line in enumerate(level):
+        for symbol in enumerate(line[1]):
+            if level[line[0]-1][symbol[0]] == 'X' and symbol[1] == 'X' and line[0] != 0:
+                pendown()
+                left(90)
+                forward(UNIT)
+                right(180)
+                forward(UNIT)
+                left(90)
+                penup()
+                try:
+                    if level[line[0]][symbol[0]+1] == 'X':
+                        pendown()
+                        forward(UNIT)
+                        penup()
+                    else:
+                        forward(UNIT)
+                except:
+                    forward(UNIT)
+            elif symbol[1] == 'X':
+                pendown()
+                forward(UNIT)
+                penup()
+            elif symbol[1] == ' ':
+                forward(UNIT)
+            else:
+                forward(UNIT)
+        if level[line[0]][0] == 'X':
+            try:
+                right(90)
+                # pendown()
+                forward(UNIT)
+                right(90)
+                penup()
+                forward(len(line[1])*UNIT)
+                left(180)
+            except:
+                pass
 
 
-placeObjects()
-for i in level:
-    print(i)
+drawLevel()
 
+# Update the screen to see the changes   
+wn.update() 
+
+
+
+
+wn.tracer(1) 
+
+
+
+
+# Keep the window open
+wn.mainloop() 
