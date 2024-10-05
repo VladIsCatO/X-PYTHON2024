@@ -1,7 +1,7 @@
 """               ___________________
                 -| Python Converter |-
                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯"""
-from ast import literal_eval
+# from ast import literal_eval # didn't work
 import sys
 def retry():
     """Code to ask if user wants to retry converting"""
@@ -47,7 +47,7 @@ def main():
             retry()
         print(from_unit)
         sign = unit_signs[f'{from_unit}_{to_unit}']
-        return literal_eval(str(number)+sign)
+        return eval(str(number)+sign)
     print('Error: Less numbers than expected. Watch example again and retry.')
     return retry()
 
