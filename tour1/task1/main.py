@@ -76,7 +76,6 @@ class Player():
         self.inventory = []
         self.inv_phrase = 'Inventory: '
         self.given_to_machine = []
-
         #applying all the properties I need to our turtle player
         self.turtle_player.showturtle()
         self.turtle_player.penup()
