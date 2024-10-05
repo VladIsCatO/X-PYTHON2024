@@ -195,7 +195,7 @@ def start_drawing():
     drawer.right(180)
 def draw_objects(symbol):
     """drawing objects, also to reduce amount of statements in draw_level function"""
-    base_dir = "C:\\Users\\vlady\\XPYTHON\\tour1\\task1\\images\\"
+    base_dir = f"{sys.path[0]}\\images\\"
     if symbol[1] == 'W':
         wm = f'{base_dir}laundry-washing-machine.gif' #washing machine
         WN.register_shape(wm)
