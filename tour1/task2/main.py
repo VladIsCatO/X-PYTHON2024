@@ -29,7 +29,7 @@ def main():
     yard = yd;
     miles = mi.""")
     unit_signs = {'ft_yd':'/3',
-                'ft_mi':'/5208',
+                'ft_mi':'/5280',
                 'mi_ft':'*5280',
                 'mi_yd':'*1760',
                 'yd_ft':'*3',
