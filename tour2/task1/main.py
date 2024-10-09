@@ -8,7 +8,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setFixedSize(QSize(400, 300))
 
-        self.setWindowTitle("My App")
+        self.setWindowTitle("Get weather!!!")
 
         self.label = QLabel()
         self.answer = QLabel()
