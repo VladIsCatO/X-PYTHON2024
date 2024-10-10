@@ -1,4 +1,6 @@
 """Maze Solving"""
+
+
 def solve_maze(
     maze, x, y, solution
 ):  # goal is to get to the last square (border) of the maze
@@ -9,7 +11,7 @@ def solve_maze(
     pos = [x, y]
     last_pos = []
     for i in range((len(maze) - 1) * (len(maze) - 1)):
-        i += 1 #to pass pylint's error
+        i += 1  # to pass pylint's error
         try:
             if pos is not False:
                 pos = check_around(maze, pos[0], pos[1], solution, last_pos)
