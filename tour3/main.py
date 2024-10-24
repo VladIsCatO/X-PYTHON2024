@@ -4,49 +4,48 @@ import socket
 from math import ceil
 
 
-def main(filename, output, mode="encode") -> str:
-    """Main function,
-    mode='encode' or 'decode'"""
-    host = "localhost"
-    with open(filename, "r", encoding="utf-8") as file:
-        data = file.read()
-    if mode == "encode":
+class Client:
+    """Client class"""
+
+    def main(self, filename, output, mode="encode") -> str:
+        """Main function,
+        mode='encode' or 'decode'"""
+        with open(filename, "r", encoding="utf-8") as file:
+            data = file.read()
+        if mode == "encode":
+            final = self.communicate(mode, data, 1000)
+
+        elif mode == "decode":
+            final = self.communicate(mode, data)
+        else:
+            raise AttributeError('Attribute "mode" must be "encode" or "decode".')
+        print(final.decode())
+        with open(output, "wb") as f:
+            f.write(final)
+        return final.decode()
+
+    def communicate(self, mode: str, data, size=1):
+        """Communicating with server"""
+        host = "localhost"
         data_to_send = []
         final = bytes()
         for i in data:
             data_to_send += i
-        for i in range(ceil(len(data) / 1000)):
+        for i in range(ceil(len(data) / size)):
             sock = socket.socket()
             sock.connect((host, 9090))
             data_ = mode + "|"
-            for i in range(1000):
+            for i in range(size):
                 if len(data_to_send) != 0:
                     data_ += data_to_send.pop(0)
             sock.send(data_.encode())
             final += sock.recv(1024)
             sock.close()
-    elif mode == "decode":
-        data_to_send = []
-        final = bytes()
-        for i in data:
-            data_to_send += i
-        for i in range(len(data)):
-            sock = socket.socket()
-            sock.connect((host, 9090))
-            data_ = mode + "|"
-            if len(data_to_send) != 0:
-                data_ += data_to_send.pop(0)
-            sock.send(data_.encode())
-            final += sock.recv(1024)
-            sock.close()
-    else:
-        raise AttributeError('Attribute "mode" must be "encode" or "decode".')
-    print(final.decode())
-    with open(output, "wb") as f:
-        f.write(final)
-    return final.decode()
+        return final
 
 
-# main('tour3/server.py', 'tour3/finish.enc') #enc is from the word 'encoded'
+client = Client()
 
-print(main("tour3/finish.enc", "tour3/finish.txt", "decode"))
+# client.main('tour3/server.py', 'tour3/finish.enc') #enc is from the word 'encoded'
+
+print(client.main("tour3/finish.enc", "tour3/finish.txt", "decode"))

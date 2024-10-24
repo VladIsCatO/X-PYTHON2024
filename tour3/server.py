@@ -85,85 +85,86 @@ class Database(Base):
     symbol: Mapped[str] = mapped_column(String(1))
 
 
-def main():
-    """Main function: connecting with user and giving information from functions to him."""
-    db = Base()
-    db.createdb()
-    sock = socket.socket()
-    sock.bind(("", 9090))
+class Server:
+    """Server Class"""
 
-    while True:
-        sock.listen(1)
-        conn, addr = sock.accept()
+    def main(self):
+        """Main function: connecting with user and giving information from functions to him."""
+        db = Base()
+        db.createdb()
+        sock = socket.socket()
+        sock.bind(("", 9090))
 
-        print("connected:", addr)
-        all_ = conn.recv(1024).decode().split("|")
-        mode = all_.pop(0)
-        data = str()
-        for i in all_:
-            data += i
-        if mode == "encode":
-            conn.send(encode(data, db))
-        elif mode == "decode":
-            conn.send(decode(data, db))
-        conn.close()
+        while True:
+            sock.listen(1)
+            conn, addr = sock.accept()
+
+            print("connected:", addr)
+            all_ = conn.recv(1024).decode().split("|")
+            mode = all_.pop(0)
+            data = str()
+            for i in all_:
+                data += i
+            if mode == "encode":
+                conn.send(self.encode(data, db))
+            elif mode == "decode":
+                conn.send(self.decode(data, db))
+            conn.close()
+
+    def encode(self, data: str, db: Base) -> bytes:
+        """function made for encoding user's data and giving it back, but encoded."""
+        before = (
+            str()
+        )  # if there's more than one symbol to put, it will be added to this var
+        final = str()
+        symbol_id = db.getSymbol()
+        data = data.split("\n")
+        if symbol_id is None:
+            symbol_id = 1
+            count = 0
+        else:
+            symbol_id = symbol_id.id + 1
+            count = int(symbol_id / MAX)
+            symbol_id = symbol_id % MAX
+
+        for i in data:
+            if (
+                chr(symbol_id) in NW or symbol_id == 13
+            ):  # without this there will be error while decoding
+                symbol_id = self.encoding_checker(symbol_id + 1)
+            if db.selectByPhrase(i) is not None:
+                final += db.selectByPhrase(i).symbol + "\n"
+                continue
+            try:
+                if count != 0:
+                    before = chr(count)
+                    final += before
+                encoding = chr(symbol_id)
+            except UnicodeError:
+                count += 1
+            db.new_phrase(i, encoding)
+            symbol_id += 1
+            final += encoding + "\n"
+        return final.encode()
+
+    def encoding_checker(self, symbol_id: int) -> int:
+        """function that checks if symbol is something kinda empty..? idk how to explain.
+        in any case, without it decoding will not work because of impossibleness
+        of getting phrase from db"""
+        if chr(symbol_id) in NW:
+            return self.encoding_checker(symbol_id + 1)
+        return symbol_id
+
+    def decode(self, data: str, db: Base) -> bytes:
+        """function made for decoding info and returning it back to the user."""
+        finish = str()
+        for i in data.split("\n"):
+            try:
+                finish += db.selectBySymbol(i).string + "\n"
+            except AttributeError:
+                pass
+        return finish.encode()
 
 
-def encode(data: str, db: Base) -> bytes:
-    """function made for encoding user's data and giving it back, but encoded."""
-    before = (
-        str()
-    )  # if there's more than one symbol to put, it will be added to this var
-    final = str()
-    symbol_id = db.getSymbol()
-    data = data.split("\n")
-    if symbol_id is None:
-        symbol_id = 1
-        count = 0
-    else:
-        symbol_id = symbol_id.id + 1
-        count = int(symbol_id / MAX)
-        symbol_id = symbol_id % MAX
-
-    for i in data:
-        if (
-            chr(symbol_id) in NW or symbol_id == 13
-        ):  # without this there will be error while decoding
-            symbol_id = encoding_checker(symbol_id + 1)
-        if db.selectByPhrase(i) is not None:
-            final += db.selectByPhrase(i).symbol + "\n"
-            continue
-        try:
-            if count != 0:
-                before = chr(count)
-                final += before
-            encoding = chr(symbol_id)
-        except UnicodeError:
-            count += 1
-        db.new_phrase(i, encoding)
-        symbol_id += 1
-        final += encoding + "\n"
-    return final.encode()
-
-
-def encoding_checker(symbol_id: int) -> int:
-    """function that checks if symbol is something kinda empty..? idk how to explain.
-    in any case, without it decoding will not work because of impossibleness
-    of getting phrase from db"""
-    if chr(symbol_id) in NW:
-        return encoding_checker(symbol_id + 1)
-    return symbol_id
-
-
-def decode(data: str, db: Base) -> bytes:
-    """function made for decoding info and returning it back to the user."""
-    finish = str()
-    for i in data.split("\n"):
-        try:
-            finish += db.selectBySymbol(i).string + "\n"
-        except AttributeError:
-            pass
-    return finish.encode()
-
-
-main()
+server = Server()
+server.main()
