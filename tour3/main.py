@@ -44,8 +44,8 @@ class Client:
         return final
 
 
-client = Client()
+if __name__ == "__main__":
+    client = Client()
+    # client.main('tour3/server.py', 'tour3/finish.enc') #enc is from the word 'encoded'
 
-# client.main('tour3/server.py', 'tour3/finish.enc') #enc is from the word 'encoded'
-
-print(client.main("tour3/finish.enc", "tour3/finish.txt", "decode"))
+    print(client.main("tour3/finish.enc", "tour3/finish.txt", "decode"))
