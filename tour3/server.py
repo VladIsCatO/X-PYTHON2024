@@ -88,17 +88,17 @@ class Database(Base):
 class Server:
     """Server Class"""
 
+    def __init__(self):
+        self.db = Base()
+        self.db.createdb()
+
     def main(self):
         """Main function: connecting with user and giving information from functions to him."""
-        db = Base()
-        db.createdb()
         sock = socket.socket()
         sock.bind(("", 9090))
-
         while True:
             sock.listen(1)
             conn, addr = sock.accept()
-
             print("connected:", addr)
             all_ = conn.recv(1024).decode().split("|")
             mode = all_.pop(0)
@@ -106,18 +106,18 @@ class Server:
             for i in all_:
                 data += i
             if mode == "encode":
-                conn.send(self.encode(data, db))
+                conn.send(self.encode(data, self.db))
             elif mode == "decode":
-                conn.send(self.decode(data, db))
+                conn.send(self.decode(data, self.db))
             conn.close()
 
-    def encode(self, data: str, db: Base) -> bytes:
+    def encode(self, data: str) -> bytes:
         """function made for encoding user's data and giving it back, but encoded."""
         before = (
             str()
         )  # if there's more than one symbol to put, it will be added to this var
         final = str()
-        symbol_id = db.getSymbol()
+        symbol_id = self.db.getSymbol()
         data = data.split("\n")
         if symbol_id is None:
             symbol_id = 1
@@ -132,8 +132,8 @@ class Server:
                 chr(symbol_id) in NW or symbol_id == 13
             ):  # without this there will be error while decoding
                 symbol_id = self.encoding_checker(symbol_id + 1)
-            if db.selectByPhrase(i) is not None:
-                final += db.selectByPhrase(i).symbol + "\n"
+            if self.db.selectByPhrase(i) is not None:
+                final += self.db.selectByPhrase(i).symbol + "\n"
                 continue
             try:
                 if count != 0:
@@ -142,7 +142,7 @@ class Server:
                 encoding = chr(symbol_id)
             except UnicodeError:
                 count += 1
-            db.new_phrase(i, encoding)
+            self.db.new_phrase(i, encoding)
             symbol_id += 1
             final += encoding + "\n"
         return final.encode()
@@ -155,12 +155,12 @@ class Server:
             return self.encoding_checker(symbol_id + 1)
         return symbol_id
 
-    def decode(self, data: str, db: Base) -> bytes:
+    def decode(self, data: str) -> bytes:
         """function made for decoding info and returning it back to the user."""
         finish = str()
         for i in data.split("\n"):
             try:
-                finish += db.selectBySymbol(i).string + "\n"
+                finish += self.db.selectBySymbol(i).string + "\n"
             except AttributeError:
                 pass
         return finish.encode()
