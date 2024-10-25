@@ -14,7 +14,7 @@ it will add another byte of info (it will look like: 'Hello WoRlD' : ��)
 import socket
 from sqlalchemy import create_engine, String
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Mapped, mapped_column
-
+from multiprocessing import Process
 
 engine = create_engine("sqlite:///tour3/default.db", echo=False)
 
@@ -27,11 +27,11 @@ MAX = 55295  # Max number for chr() or unicode characters
 NW = [
     " ",
     "",
-    "\n",
+    "\n"
+,
     """
 """,
-]  # Means NOT WORKI
-NG
+]  # Means NOT WORKING
 
 
 class Base(DeclarativeBase):
@@ -62,8 +62,8 @@ class Base(DeclarativeBase):
     def select_by_phrase(self, phrase):
         """getting a record by line"""
         with Session() as session:
-            return session.query(Database).filter_by
-(string=phrase).first()
+            retur
+n session.query(Database).filter_by(string=phrase).first()
 
     def select_by_symbol(self, symbol):
         """getting a record by symbol"""
@@ -96,9 +96,9 @@ class Server:
 
     def main(self):
         """Main function: connecting with user and giving information from functions to him."""
-        sock = socket.socket()
-        sock
-.bind(("", 9090))
+        
+sock = socket.socket()
+        sock.bind(("", 9090))
         while True:
             sock.listen(1)
             conn, addr = sock.accept()
@@ -127,8 +127,8 @@ class Server:
             count = 0
         else:
             symbol_id = symbol_id.id + 1
-            count = int(symbol_id /
- MAX)
+
+            count = int(symbol_id / MAX)
             symbol_id = symbol_id % MAX
 
         for i in data:
@@ -153,8 +153,8 @@ class Server:
 
     def encoding_checker(self, symbol_id: int) -> int:
         """function that checks if symbol is something kinda empty..? idk how to explain.
-        in any case, without it decoding will not work because of im
-possibleness
+        in any case, without it d
+ecoding will not work because of impossibleness
         of getting phrase from db"""
         if chr(symbol_id) in NW:
             return self.encoding_checker(symbol_id + 1)

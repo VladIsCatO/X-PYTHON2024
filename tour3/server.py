@@ -14,7 +14,7 @@ it will add another byte of info (it will look like: 'Hello WoRlD' : ��)
 import socket
 from sqlalchemy import create_engine, String
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Mapped, mapped_column
-
+from multiprocessing import Process
 
 engine = create_engine("sqlite:///tour3/default.db", echo=False)
 
@@ -162,7 +162,6 @@ class Server:
             try:
                 finish += self.db.select_by_symbol(i).string + "\n"
             except AttributeError:
-                print('err')
                 pass
         return finish.encode()
 
