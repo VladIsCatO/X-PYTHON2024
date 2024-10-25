@@ -9,7 +9,6 @@ class TestServer(unittest.TestCase):
 
     def setUp(self):
         """getting ready for tests"""
-        print(chr(1))
         self.server = Server()
 
     def test_encoding(self):
@@ -18,14 +17,14 @@ class TestServer(unittest.TestCase):
             self.server.encode(
                 '"""Server side, where code is encoding all the line in one symbol'
             ),
-            "☺",
+            b"\x01\n",
         )
 
     def test_decoding(self):
         """testing decoding"""
         self.assertEqual(
-            self.server.decode("☺"),
-            b'"""Server side, where code is encoding all the line in one symbol',
+            self.server.decode(""),
+            b'"""Server side, where code is encoding all the line in one symbol\n',
         )
 
 

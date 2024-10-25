@@ -106,9 +106,9 @@ class Server:
             for i in all_:
                 data += i
             if mode == "encode":
-                conn.send(self.encode(data, self.db))
+                conn.send(self.encode(data))
             elif mode == "decode":
-                conn.send(self.decode(data, self.db))
+                conn.send(self.decode(data))
             conn.close()
 
     def encode(self, data: str) -> bytes:
@@ -117,7 +117,7 @@ class Server:
             str()
         )  # if there's more than one symbol to put, it will be added to this var
         final = str()
-        symbol_id = self.db.getSymbol()
+        symbol_id = self.db.get_symbol()
         data = data.split("\n")
         if symbol_id is None:
             symbol_id = 1
@@ -132,8 +132,8 @@ class Server:
                 chr(symbol_id) in NW or symbol_id == 13
             ):  # without this there will be error while decoding
                 symbol_id = self.encoding_checker(symbol_id + 1)
-            if self.db.selectByPhrase(i) is not None:
-                final += self.db.selectByPhrase(i).symbol + "\n"
+            if self.db.select_by_phrase(i) is not None:
+                final += self.db.select_by_phrase(i).symbol + "\n"
                 continue
             try:
                 if count != 0:
@@ -158,10 +158,11 @@ class Server:
     def decode(self, data: str) -> bytes:
         """function made for decoding info and returning it back to the user."""
         finish = str()
-        for i in data.split("\n"):
+        for i in data:
             try:
-                finish += self.db.selectBySymbol(i).string + "\n"
+                finish += self.db.select_by_symbol(i).string + "\n"
             except AttributeError:
+                print('err')
                 pass
         return finish.encode()
 
