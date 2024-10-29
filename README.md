@@ -23,9 +23,19 @@ Working on the task for fourth tour...
 > Wait until all needed python libraries install...  
 > Just go straight to the next step.  
 
-### Step 3: Starting the site
+### Step 3: Starting the code/script (idc how you call it)
+
+> Write `python3 <tour_you_want>/<file_you_need>.py`  
+> Example for tour 4: `python3 tour4/main.py`
+> Work with it! (or if it's a site, pass to the fourth step)
 
 ### Step 4: Opening it in browser (you have a browser right?)
+
+**This step is only for tours where i did websites, here is a list of them:**  
+**- tour 4.**
+
+* Go to this link:
+  - > `127.0.0.1:5000`
 
 ## But for tour 3...
 
